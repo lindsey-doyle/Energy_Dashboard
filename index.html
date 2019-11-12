@@ -1,0 +1,39 @@
+<html>
+    <head>
+        <title>Dashboard</title>
+
+        <!-- Internal stylesheet import begin -->
+        <link rel="stylesheet" href="main.css">
+        <!-- Internal stylesheet import end-->
+
+        <!-- External imports begin -->
+        <script src = "https://code.highcharts.com/highcharts.js"></script>
+        <!-- External imports end -->
+        
+    </head>
+    <body>
+        <!-- Page Header Table -->
+        <table class="simpleTable" border="2">
+            <tr>
+                <td width="5%">[logo]</td>
+                <td width="12%"><h1>Energy</h1></td>
+                <td><h1>Springfield</h1></td>
+            </tr>
+        </table>
+      
+        <!-- Chart Placement Table -->
+        <table class="simpleTable greaterArea">
+            <tr>
+                <td rowspan="2" id="sharedGrid">(time series here)</td>
+                <td rowspan="1" id="legendGrid">(legend table goes here)</td>
+            </tr>
+            <tr>
+                <td rowspan="1" id="pieGrid">(pie chart goes here)</td>
+            </tr>
+        </table>
+
+        <!-- Internal JS imports begin -->
+        <script src="example_highcharts.js"></script>
+        <!-- Internal JS imports end -->
+    </body>
+</html>
