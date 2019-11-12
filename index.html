@@ -9,6 +9,9 @@
         <!-- External imports begin -->
         <script src = "https://code.highcharts.com/highcharts.js"></script>
         <script src = "https://code.highcharts.com/modules/data.js"></script>
+        <script src = "https://code.highcharts.com/modules/exporting.js"></script>  
+        <script src = "https://code.highcharts.com/modules/offline-exporting.js"></script>  
+        <script src = "https://code.highcharts.com/modules/export-data.js"></script>
         <!-- External imports end -->
         
     </head>
@@ -26,16 +29,16 @@
         <table class="simpleTable greaterArea">
             <tr>
                 <td rowspan="2" id="sharedGrid">(time series here)</td>
-                <td rowspan="1" id="legendGrid">(legend table goes here)</td>
+                <td id="legendGrid">(legend table goes here)</td>
             </tr>
             <tr>
-                <td rowspan="1" id="pieGrid">(pie chart goes here)</td>
+                <td id="pieGrid">(pie chart goes here)</td>
             </tr>
         </table>
 
 
         <!-- Internal JS imports begin -->
-        <script src="example_highcharts.js"></script>
+        <script src="main.js"></script>
         <!-- Internal JS imports end -->
     </body>
 </html>
