@@ -1,8 +1,22 @@
-
+/*
+ * Lindsey Doyle
+ * A12997818
+ */
     
 
-
-
+/**
+ * Color values for energy breakup values (helper var).
+ */
+var colorsMap = {
+    'black_coal': 'black', 
+    'distillate': 'red', 
+    'gas_ccgt': '#FDB462',
+    'hydro': '#0084AD',
+    'wind': '#228B22',
+    'exports': '#EEC9FF',
+    'pumps': '#9FE8FF'
+};
+    
 /** ----------------- GRAPH CONFIG TEMPLATES --------------------*/
 
 /** Configurations for the Energy Generation graph (stacked area graph) */
@@ -32,7 +46,7 @@ tooltip: {
     shared: true,
     formatter: function () {
         return Highcharts.dateFormat('%e %b. %I:%M %P',
-        new Date(this.points[0].x)) + ' Total ' + this.points[0].total + ' MW'
+        new Date(this.points[0].x)) + ' total__generation ' + this.points[0].total__generation + ' MW'
     },
     positioner: function () {
         return {
@@ -265,20 +279,7 @@ series: [{
 }]
 }
 
-
-/**
- * Color values for energy breakup values.
- */
-var colorsMap = {
-'black_coal': '#000000', 
-'distillate': 'yellow', 
-'gas_ccgt': '#FDB462',
-'hydro': '#0084AD',
-'wind': '#228B22',
-'exports': '#EEC9FF',
-'pumps': '#9FE8FF'
-};
-
+/** ----------------- ENERGY BREAKUP INFO --------------------*/
 
 /**
  * Global data-structure to hold the energy breakup
@@ -289,7 +290,7 @@ data: []
 };
 
 /**
- * Function to create deep-copy of energy breakup to use in pie chart.
+ * Function to create deep-copy of energy breakup values to use in pie chart/legend.
  */
 function updateEnergyData(data) {
 data = data.filter(function(elm) {
@@ -304,8 +305,9 @@ for (var idx = 0; idx < data[0]['data'].length; idx ++) {
 }
 
 /**
- * Function to ...
+ * Function to get energy breakup from global data structure for pie chart.
  */
+var total_generation; // updated in render pie chart 
 function renderPieChart(nodeId) {
     var pieData = globalEnergyData['name'].map(function(elm, idx) {
         if (globalEnergyData['name'] !== 'pumps' & globalEnergyData['name'] !== 'exports') {
@@ -317,23 +319,37 @@ function renderPieChart(nodeId) {
         }
     });
     pieConfig.series[0].data = pieData;
-    var total = 0;
+    total_generation = 0;
     for (var i = 0; i < pieConfig.series[0].data.length; i++) {
-        total = total + pieConfig.series[0].data[i].y
+        total_generation = total_generation + pieConfig.series[0].data[i].y
     }
-    pieConfig.title.text = Math.round(total) + ' MW';
+    pieConfig.title.text = Math.round(total_generation) + ' MW';
     Highcharts.chart(pieConfig)
 }
 
+/**
+ * Function to get data for energy breakups from global data structure.
+ */
 function renderLegend(idx) {
-    document.getElementById('p_wind').innerHTML = (globalEnergyData.data[idx][0]).toFixed(2); 
-    document.getElementById('p_hydro').innerHTML = (globalEnergyData.data[idx][1]).toFixed(2); 
-    document.getElementById('p_gas').innerHTML = (globalEnergyData.data[idx][2]).toFixed(2); 
+    // 'Power'
+    document.getElementById('total_gen').innerHTML = total_generation.toFixed(0);
+    document.getElementById('p_wind').innerHTML = (globalEnergyData.data[idx][0]).toFixed(0); 
+    document.getElementById('p_hydro').innerHTML = (globalEnergyData.data[idx][1]).toFixed(0); 
+    document.getElementById('p_gas').innerHTML = (globalEnergyData.data[idx][2]).toFixed(0); 
     document.getElementById('p_distillate').innerHTML = (globalEnergyData.data[idx][3]).toFixed(2); 
-    document.getElementById('p_coal').innerHTML = (globalEnergyData.data[idx][4]).toFixed(2); 
+    document.getElementById('p_coal').innerHTML = (globalEnergyData.data[idx][4]).toFixed(0); 
+
+    // 'Contribution'
+    document.getElementById('c_wind').innerHTML =  (((globalEnergyData.data[idx][0])*100)/total_generation).toFixed(1)+"%";
+    document.getElementById('c_hydro').innerHTML = (((globalEnergyData.data[idx][1])*100)/total_generation).toFixed(1)+"%";
+    document.getElementById('c_gas').innerHTML = (((globalEnergyData.data[idx][2])*100)/total_generation).toFixed(1)+"%";
+    document.getElementById('c_distillate').innerHTML = (((globalEnergyData.data[idx][3])*100)/total_generation).toFixed(4)+"%";
+    document.getElementById('c_coal').innerHTML = (((globalEnergyData.data[idx][4])*100)/total_generation).toFixed(1)+"%";
 }
 
-
+/**
+ * Load data into corresponding chart data variable
+ */
 function onSuccessCb(jsonData) {
 
     var energyData = jsonData.filter(function(elm) {
@@ -453,9 +469,6 @@ document.getElementById('sharedGrid').addEventListener(
 );
 });
 
-/**
- *  
- */
 ['mouseleave'].forEach(function (eventType) {
     document.getElementById('sharedGrid').addEventListener(
         eventType,
@@ -464,7 +477,6 @@ document.getElementById('sharedGrid').addEventListener(
                 point,
                 i,
                 event;
-            
                 for (i = 0; i < Highcharts.charts.length; i = i + 1) {
                     chart = Highcharts.charts[i];
                     event = chart.pointer.normalize(e);
@@ -501,13 +513,12 @@ function syncExtremes(e) {
             }
         });
         }
-}
-    
+}   
 
 /** ----------------- DATA FETCHING / ONLOAD STUFF --------------------*/
 
 /** 
- * Utility function to fetch any file from the server
+ * Utility function to fetch any file from the server.
  */
 function fetchJSONFile(path, callback) {
 var httpRequest = new XMLHttpRequest();
@@ -523,7 +534,7 @@ httpRequest.open('GET', path);
 httpRequest.send(); 
 }
 
-
+/* doc execution entrypoint */
 function doMain() { 
     fetchJSONFile('assets/springfield_converted_json.js', onSuccessCb);
 }
