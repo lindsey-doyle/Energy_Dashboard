@@ -3,22 +3,15 @@
     <head>
         <title>Dashboard</title>
 
-        <!-- Internal stylesheet import begin -->
+        <!-- Internal stylesheet import -->
         <link rel="stylesheet" href="main.css">
-        <!-- Internal stylesheet import end-->
-
-        <!-- External imports begin -->
-        <script src = "https://code.highcharts.com/highcharts.js"></script>
-        <script src = "https://code.highcharts.com/modules/data.js"></script>
-        <script src = "https://code.highcharts.com/modules/exporting.js"></script>  
-        <script src = "https://code.highcharts.com/modules/offline-exporting.js"></script>  
-        <script src = "https://code.highcharts.com/modules/export-data.js"></script>
-        <!-- External imports end -->
+        <!-- External Script -->
+        <script src="https://code.highcharts.com/css/highcharts.css"></script>
         
     </head>
     <body>
         <!-- Page Header Table -->
-        <table class="simpleTable" border="2">
+        <table class="simpleTable" border="0">
             <tr>
                 <td width="5%"><img src="assets/simpsons_PNG.png" alt="[logo]" class="pageLogo"/></td>
                 <td width="12%"><h1>Energy</h1></td>
@@ -29,13 +22,20 @@
         <!-- Chart Placement Table -->
         <table class="simpleTable greaterArea">
             <tr>
-                <td rowspan="2" id="sharedGrid">(time series here)</td>
+                <td rowspan="2" id="sharedGrid"></td>
                 <td id="legendGrid">(legend table goes here)</td>
             </tr>
             <tr>
-                <td id="pieGrid">(pie chart goes here)</td>
+                <td id="pieGrid"></td>
             </tr>
         </table>
+
+         <!-- External imports begin -->
+         <script src ="https://code.highcharts.com/highcharts.js"></script>
+         <script src="https://code.highcharts.com/modules/exporting.js"></script>  
+         <script src="https://code.highcharts.com/modules/offline-exporting.js"></script>  
+         <script src="https://code.highcharts.com/modules/export-data.js"></script>
+         <!-- External imports end -->
 
         <!-- Internal JS imports begin -->
         <script src="main.js"></script>
