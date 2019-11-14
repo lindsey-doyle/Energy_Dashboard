@@ -1,47 +1,16 @@
 
     
-/**
-    * Highlight a point by showing tooltip, setting hover state and draw crosshair
-    */
-   Highcharts.Point.prototype.highlight = function (event) {
-    event = this.series.chart.pointer.normalize(event);
-    this.onMouseOver(); // Show the hover marker
-    this.series.chart.tooltip.refresh(this); // Show the tooltip
-    this.series.chart.xAxis[0].drawCrosshair(event, this); // Show the crosshair
-    this.series.chart.yAxis[0].drawCrosshair(event, this);
-};
 
-/**
-* Synchronize zooming through the setExtremes event handler.
-*/
-function syncExtremes(e) {
-var thisChart = this.chart;
 
-if (e.trigger !== 'syncExtremes') { // Prevent feedback loop
-    Highcharts.each(Highcharts.charts, function (chart) {
-        if (chart !== thisChart) {
-            if (chart.xAxis[0].setExtremes) { // It is null while updating
-                chart.xAxis[0].setExtremes(
-                    e.min,
-                    e.max,
-                    undefined,
-                    false,
-                    { trigger: 'syncExtremes' }
-                );
-            }
-        }
-    });
-    }
-}
 
-/**
- * CONFIGURATIONS for synchronized charts
- */
+/** ----------------- GRAPH CONFIG TEMPLATES --------------------*/
+
+/** Configurations for the Energy Generation graph (stacked area graph) */
 var energyConfig = {
-// config for the energy stacked area graph
+
 chart: {
         type: 'areaspline',
-        marginLeft: 10, // Keep all charts left aligned
+        marginLeft: 10, 
         spacingTop: 10,
         spacingBottom: 10,
         backgroundColor: "transparent"       
@@ -56,14 +25,14 @@ title: {
 },
 tooltip: {
     crosshairs: [{
-      width: 2,
+      width: 1,
       color: 'red',
       zIndex: 3
     }],
     shared: true,
     formatter: function () {
         return Highcharts.dateFormat('%e %b. %I:%M %P',
-        new Date(this.points[0].x)) + ' Total '+ this.points[0].total + ' MW'
+        new Date(this.points[0].x)) + ' Total ' + this.points[0].total + ' MW'
     },
     positioner: function () {
         return {
@@ -91,14 +60,15 @@ plotarea: {
     margin: "dynamic"
 },
 xAxis: {
+    //visible: true,
     type: 'datetime',
     minorTickInterval: 1000*60*30,
     dateTimeLabelFormats: {
         day: '%e %b'
     },
     crosshair: {
-        color: '#CA5131',
         width: 1,
+        color: 'red',
         zIndex: 5
     },
     events: {
@@ -111,7 +81,6 @@ yAxis: {
     },
     labels: {
         formatter: function (){
-            
             return this.value;
         },
         align: "left",
@@ -140,7 +109,7 @@ plotOptions: {
 },
 series: []
 }
-
+/** Configurations for the Price graph (line graph) */
 var priceConfig = {
 
 chart: {
@@ -163,9 +132,7 @@ tooltip: {
       color: 'red',
       zIndex: 3
     }],
-
     enabled: false
-
   },
 xAxis: {
     visible: false
@@ -202,9 +169,8 @@ plotOptions: {
 },
 series: []
 }
-
+/** Configurations for the Temperature graph (line graph) */
 var tempConfig = {
-// config for the temperature line graph
 chart: {
         type: "line",
         marginLeft: 10, 
@@ -264,10 +230,10 @@ plotOptions: {
 },
 series: []
 }
-
+/** Configurations for the Pie Chart */
 var pieConfig = {
 chart: {
-    renderTo: 'pieGrid',
+    renderTo: 'pieGrid', 
     type: 'pie',
     backgroundColor: 'transparent',
     animation: false
@@ -289,11 +255,11 @@ title: {
     verticalAlign: 'middle',
     text: '',
     style: {
-        fontSize: '13px'
+        fontSize: '15px'
     }
 },
 series: [{
-    name: 'energy:',
+    name: 'Energy (MW)',
     colorByPoint: true,
     data: []
 }]
@@ -301,7 +267,7 @@ series: [{
 
 
 /**
- * Color values for energy breakup:
+ * Color values for energy breakup values.
  */
 var colorsMap = {
 'black_coal': '#000000', 
@@ -322,7 +288,9 @@ name: [],
 data: []
 };
 
-// function to do deep-copy on the global data structure
+/**
+ * Function to create deep-copy of energy breakup to use in pie chart.
+ */
 function updateEnergyData(data) {
 data = data.filter(function(elm) {
     return (elm.name !== 'pumps' & elm.name !== 'exports')
@@ -335,7 +303,9 @@ for (var idx = 0; idx < data[0]['data'].length; idx ++) {
   globalEnergyData['name'] = data.map(elm => elm['name']);
 }
 
-
+/**
+ * Function to ...
+ */
 function renderPieChart(nodeId) {
     var pieData = globalEnergyData['name'].map(function(elm, idx) {
         if (globalEnergyData['name'] !== 'pumps' & globalEnergyData['name'] !== 'exports') {
@@ -355,58 +325,64 @@ function renderPieChart(nodeId) {
     Highcharts.chart(pieConfig)
 }
 
-// ......
-// this function is responsible for plotting the energy on
-// successfully loading the JSON data
-// It also plots the pie chart for nodeId=0
-// .....
+function renderLegend(idx) {
+    document.getElementById('p_wind').innerHTML = (globalEnergyData.data[idx][0]).toFixed(2); 
+    document.getElementById('p_hydro').innerHTML = (globalEnergyData.data[idx][1]).toFixed(2); 
+    document.getElementById('p_gas').innerHTML = (globalEnergyData.data[idx][2]).toFixed(2); 
+    document.getElementById('p_distillate').innerHTML = (globalEnergyData.data[idx][3]).toFixed(2); 
+    document.getElementById('p_coal').innerHTML = (globalEnergyData.data[idx][4]).toFixed(2); 
+}
+
+
 function onSuccessCb(jsonData) {
-var energyData = jsonData.filter(function(elm) {
+
+    var energyData = jsonData.filter(function(elm) {
     if (elm.fuel_tech !== 'rooftop_solar'){
         return elm['type'] === 'power';
     };
-}).map(function(elm) {
-    var energyVals = new Array();
-    if (elm.fuel_tech === 'pumps' || elm.fuel_tech === 'exports') {
-        for (var i = 1; i < elm.history.data.length; i = i+6) {
-            energyVals.push(elm.history.data[i]*(-1));
-        };
-    } else {
-        for (var i = 1; i < elm.history.data.length; i = i+6) {
-            energyVals.push(elm.history.data[i]);
-        };
-    }
-    return {
-        data: energyVals,
-        name: elm.fuel_tech,
-        pointStart: (elm.history.start + 5 * 60) * 1000,
-        pointInterval: 1000 * 60 * 30,
-        color: colorsMap[elm.fuel_tech],
-        fillOpacity: 1,
-        tooltip: {
-            valueSuffix: ' ' + elm.units
+    }).map(function(elm) {
+        var energyVals = new Array();
+        if (elm.fuel_tech === 'pumps' || elm.fuel_tech === 'exports') {
+            for (var i = 1; i < elm.history.data.length; i = i+6) {
+                energyVals.push(elm.history.data[i]*(-1));
+            };
+        } else {
+            for (var i = 1; i < elm.history.data.length; i = i+6) {
+                energyVals.push(elm.history.data[i]);
+            };
         }
-    };
-});
-updateEnergyData(energyData.reverse()); // TODO reverse here??
+        return {
+            data: energyVals,
+            name: elm.fuel_tech,
+            pointStart: (elm.history.start + 5 * 60) * 1000,
+            pointInterval: 1000 * 60 * 30,
+            color: colorsMap[elm.fuel_tech],
+            fillOpacity: 1,
+            tooltip: {
+                valueSuffix: ' ' + elm.units
+            }
+        };
+    });
+    updateEnergyData(energyData.reverse()); 
 
-var priceData = jsonData.filter(function(elm) {
-    return elm['type'] === 'price';
-}).map(function(elm) {
-    return {
-      data: elm['history']['data'],
-      name: elm['id']
+    var priceData = jsonData.filter(function(elm) {
+        return elm['type'] === 'price';
+    }).map(function(elm) {
+        return {
+        data: elm['history']['data'],
+        name: elm['id']
+        };
+    });
+
+    var tempData = jsonData.filter(function(elm) {
+        return elm['type'] === 'temperature';
+    }).map(function(elm) {
+        return {
+        data: elm['history']['data'],
+        name: elm['id']
     };
 });
 
-var tempData = jsonData.filter(function(elm) {
-    return elm['type'] === 'temperature';
-}).map(function(elm) {
-    return {
-      data: elm['history']['data'],
-      name: elm['id']
-    };
-});
 
 energyConfig.series = energyData;
 priceConfig.series = priceData;
@@ -428,35 +404,27 @@ document.getElementById('sharedGrid').appendChild(chartDiv3);
 Highcharts.chart(chartDiv3, tempConfig);
 
 renderPieChart(0)
+renderLegend(0)
 
 }
 
-['mouseleave'].forEach(function (eventType) {
-document.getElementById('sharedGrid').addEventListener(
-    eventType,
-    function (e) {
-        var chart,
-            point,
-            i,
-            event;
-        
-            for (i = 0; i < Highcharts.charts.length; i = i + 1) {
-                chart = Highcharts.charts[i];
-                event = chart.pointer.normalize(e);
-                point = chart.series[0].searchPoint(event, true);
-                
-                if (point) {
-                    point.onMouseOut(); 
-                    chart.tooltip.hide(point);
-                    chart.xAxis[0].hideCrosshair(); 
-                }
-            }
-        }
-)
-});
+
+/** ----------------- SYNCHRONIZATION / MOUSEOVER STUFF --------------------*/
 
 /**
- * Synchronization - for pie chart, legend, etc.
+* Highlight a point by showing tooltip, setting hover state and draw crosshair
+*/
+Highcharts.Point.prototype.highlight = function (event) {
+    event = this.series.chart.pointer.normalize(event);
+    this.onMouseOver(); // Show the hover marker
+    this.series.chart.tooltip.refresh(this); // Show the tooltip
+    this.series.chart.xAxis[0].drawCrosshair(event, this); // Show the crosshair
+    this.series.chart.yAxis[0].drawCrosshair(event, this);
+};
+
+/**
+ * To synchronize tooltips and crosshairs, override the
+ * built-in events with handlers defined on the parent element:
  */
 ['mousemove', 'touchmove', 'touchstart'].forEach(function (eventType) {
 document.getElementById('sharedGrid').addEventListener(
@@ -475,19 +443,72 @@ document.getElementById('sharedGrid').addEventListener(
             // Get the hovered point
             point = chart.series[0].searchPoint(event, true);
             idx = chart.series[0].data.indexOf( point );
-
             if (point) {
                 point.highlight(e);
                 renderPieChart(idx);
+                renderLegend(idx);
             }
         }
     }
 );
 });
 
-// Fetching the data, script excecution entrypoint:
+/**
+ *  
+ */
+['mouseleave'].forEach(function (eventType) {
+    document.getElementById('sharedGrid').addEventListener(
+        eventType,
+        function (e) {
+            var chart,
+                point,
+                i,
+                event;
+            
+                for (i = 0; i < Highcharts.charts.length; i = i + 1) {
+                    chart = Highcharts.charts[i];
+                    event = chart.pointer.normalize(e);
+                    point = chart.series[0].searchPoint(event, true);
+                    
+                    if (point) {
+                        point.onMouseOut(); 
+                        chart.tooltip.hide(point);
+                        chart.xAxis[0].hideCrosshair(); 
+                    }
+                }
+            }
+    )
+});
 
-// Utility function to fetch any file from the server
+/**
+ * Synchronize zooming with the setExtremes event handler.
+ */
+function syncExtremes(e) {
+    var thisChart = this.chart;
+    
+    if (e.trigger !== 'syncExtremes') { // Prevent feedback loop
+        Highcharts.each(Highcharts.charts, function (chart) {
+            if (chart !== thisChart) {
+                if (chart.xAxis[0].setExtremes) { // It is null while updating
+                    chart.xAxis[0].setExtremes(
+                        e.min,
+                        e.max,
+                        undefined,
+                        false,
+                        { trigger: 'syncExtremes' }
+                    );
+                }
+            }
+        });
+        }
+}
+    
+
+/** ----------------- DATA FETCHING / ONLOAD STUFF --------------------*/
+
+/** 
+ * Utility function to fetch any file from the server
+ */
 function fetchJSONFile(path, callback) {
 var httpRequest = new XMLHttpRequest();
 httpRequest.onreadystatechange = function() {
@@ -502,9 +523,8 @@ httpRequest.open('GET', path);
 httpRequest.send(); 
 }
 
-// The entrypoint of the script execution
-function doMain() {
-fetchJSONFile('assets/springfield_converted_json.js', onSuccessCb);
-}
 
+function doMain() { 
+    fetchJSONFile('assets/springfield_converted_json.js', onSuccessCb);
+}
 document.onload = doMain();
