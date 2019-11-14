@@ -34,6 +34,9 @@ if (e.trigger !== 'syncExtremes') { // Prevent feedback loop
     }
 }
 
+/**
+ * CONFIGURATIONS for synchronized charts
+ */
 var energyConfig = {
 // config for the energy stacked area graph
 chart: {
@@ -116,6 +119,7 @@ yAxis: {
         x: 5,
         y: -2
     },
+    gridLineDashStyle: 'longdash',
     tickInterval: 1000,
     showLastLabel: false,
     min: -1000,
@@ -123,6 +127,7 @@ yAxis: {
 },
 plotOptions: {
     series: {
+        stacking: "normal",
         states: {
             inactive: {
                 opacity: 1
@@ -135,8 +140,6 @@ plotOptions: {
 },
 series: []
 }
-
-
 
 var priceConfig = {
 
@@ -177,6 +180,7 @@ yAxis: {
         x: 5,
         y: -2
     },
+    gridLineDashStyle: 'longdash',
     tickInterval: 100,
     showLastLabel: false,
     min: -100,
@@ -238,6 +242,7 @@ yAxis: {
         x: 5,
         y: -2
     },
+    gridLineDashStyle: 'longdash',
     tickInterval: 20,
     showLastLabel: false,
     min: 0,
@@ -293,6 +298,11 @@ series: [{
     data: []
 }]
 }
+
+
+/**
+ * Color values for energy breakup:
+ */
 var colorsMap = {
 'black_coal': '#000000', 
 'distillate': 'yellow', 
@@ -303,7 +313,10 @@ var colorsMap = {
 'pumps': '#9FE8FF'
 };
 
-// global data-structure to hold the energy breakup
+
+/**
+ * Global data-structure to hold the energy breakup
+ */
 var globalEnergyData = {
 name: [],
 data: []
@@ -342,9 +355,11 @@ function renderPieChart(nodeId) {
     Highcharts.chart(pieConfig)
 }
 
+// ......
 // this function is responsible for plotting the energy on
 // successfully loading the JSON data
 // It also plots the pie chart for nodeId=0
+// .....
 function onSuccessCb(jsonData) {
 var energyData = jsonData.filter(function(elm) {
     if (elm.fuel_tech !== 'rooftop_solar'){
@@ -393,7 +408,7 @@ var tempData = jsonData.filter(function(elm) {
     };
 });
 
-energyConfig.series = energyData.reverse();
+energyConfig.series = energyData;
 priceConfig.series = priceData;
 tempConfig.series = tempData;
 
@@ -440,6 +455,9 @@ document.getElementById('sharedGrid').addEventListener(
 )
 });
 
+/**
+ * Synchronization - for pie chart, legend, etc.
+ */
 ['mousemove', 'touchmove', 'touchstart'].forEach(function (eventType) {
 document.getElementById('sharedGrid').addEventListener(
     eventType,

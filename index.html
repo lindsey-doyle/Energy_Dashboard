@@ -7,23 +7,100 @@
         <link rel="stylesheet" href="main.css">
         <!-- External Script -->
         <script src="https://code.highcharts.com/css/highcharts.css"></script>
-        
+
     </head>
     <body>
         <!-- Page Header Table -->
-        <table class="simpleTable" border="0">
-            <tr>
-                <td width="5%"><img src="assets/simpsons_PNG.png" alt="[logo]" class="pageLogo"/></td>
-                <td width="12%"><h1>Energy</h1></td>
-                <td><h1>Springfield</h1></td>
-            </tr>
-        </table>
-      
+        <table class="simpleTable">
+                <tr>
+                    <td width="5%"><img src="assets/simpsons_PNG.png" alt="[logo]" class="pageLogo"/></td>
+                    <td width="12%"><h1>Energy</h1></td>
+                    <td><h1>Springfield</h1></td>
+                </tr>
+            </table>
+
         <!-- Chart Placement Table -->
         <table class="simpleTable greaterArea">
             <tr>
-                <td rowspan="2" id="sharedGrid"></td>
-                <td id="legendGrid">(legend table goes here)</td>
+                <td rowspan="2" id="sharedGrid"><div id = "container"></div></td>
+                <td id="legendGrid">
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td>&nbsp;</td>
+                          <td class="bold">Power   (MW)</td>
+                          <td class="bold">Contribution to Demand</td>
+                          <td class="bold">Av.Value</td>
+                        </tr>
+                        <tr>
+                          <td class="bold">Sources</td>
+                          <td id="totalSrc" class="bold"></td>
+                          <td></td>
+                          <td id="price" class="bold"></td>
+                        </tr>
+                        <tr>
+                          <td id="wind">Wind</td>
+                          <td id="windpower">&nbsp;</td>
+                          <td id="winddemand">&nbsp;</td>
+                          <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                          <td id="hydro">Hydro</td>
+                          <td id="hydropower"></td>
+                          <td id="hydrodemand"></td>
+                          <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                          <td id = "gas">Gas (CCGT)</td>
+                          <td id = "gaspower"></td>
+                          <td id = "gasdemand"></td>
+                          <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                          <td id = "dist">Distillate</td>
+                          <td id = "distpower"></td>
+                          <td id = "distdemand"></td>
+                          <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                          <td id = "coal">Black Coal</td>
+                          <td id = "coalpower"></td>
+                          <td id = "coaldemand"></td>
+                          <td>&nbsp;</td>
+                        </tr>
+                          <tr>
+                          <td class="bold">Loads</td>
+                          <td id="totalLoad" class="bold"></td>
+                          <td></td>
+                          <td></td>
+                        </tr>
+                        <tr>
+                          <td id = "exports">Exports</td>
+                          <td id = "exportspower"></td>
+                          <td id = "exportsdemand"></td>
+                          <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                          <td id = "pumps">Pumps</td>
+                          <td id = "pumpspower"></td>
+                          <td id = "pumpsdemand"></td>
+                          <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                          <td class = "bold">Net</td>
+                          <td id = "total" class="bold"></td>
+                          <td>&nbsp;</td>
+                          <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                          <td class = "bold">Renewables</td>
+                          <td>&nbsp;</td>
+                          <td id = "renewables" class="bold"></td>
+                          <td>&nbsp;</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                </td>
             </tr>
             <tr>
                 <td id="pieGrid"></td>
